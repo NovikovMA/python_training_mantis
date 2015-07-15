@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'M.Novikov'
 
-#from fixture.address import AddressHelper
-#from fixture.group import GroupHelper
+from fixture.project import ProjectHelper                                           # Управление проектами Mantis
 from fixture.session import SessionHelper
 from selenium import webdriver
 
@@ -18,9 +17,8 @@ class Application:
             self.wd = webdriver.Ie()
         else:
             raise ValueError("Unrecognized browser %s" % browser)
+        self.project = ProjectHelper(self)
         self.session = SessionHelper(self)
-        #self.address = AddressHelper(self)
-        #self.group = GroupHelper(self)
         self.base_url = base_url
 
     def is_valid(self):

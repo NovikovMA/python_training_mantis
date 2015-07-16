@@ -16,8 +16,9 @@ class ProjectHelper:
     def open_project_page(self):
         wd = self.app.wd                                                    # Получение доступа к web-драйверу
         if not (wd.current_url.endswith("manage_proj_page.php") and len(wd.find_elements_by_link_text("Manage Projects")) == 0):    # При отсутсвии строки поиска
-            wd.find_element_by_link_text("Manage").click()                  # Переход к странице управления
-            wd.find_element_by_link_text("Manage Projects").click()         # Переход к управлению проектами
+            wd.get(self.app.base_url + "/manage_proj_page.php")             # Переход на страницу управления проектами
+            #wd.find_element_by_link_text("Manage").click()                  # Переход к странице управления
+            #wd.find_element_by_link_text("Manage Projects").click()         # Переход к управлению проектами
 
     # Проверка и изменение текстовых полей формы ввода
     def change_text_value(self, field_name, text):
@@ -36,23 +37,37 @@ class ProjectHelper:
     def create(self, new_project):
         wd = self.app.wd                                                    # Получение доступа к web-драйверу
         self.open_project_page()                                            # Переход к списку проектов
-        wd.find_element_by_css_selector("td.form-title > form > input.button-small").click()    # Запуск добавления нового пректа
+        wd.find_element_by_css_selector('input[value="Create New Project"]').click()    # Запуск добавления нового пректа
         self.fill_project_form(new_project)                                 # Заполнение параметров проекта
-        wd.find_element_by_css_selector("input.button").click()             # Подтверждение введенных данных
+        wd.find_element_by_css_selector('input[value="Add Project"]').click()   # Подтверждение введенных данных
         self.project_cache = None                                           # Сброс сохраненного ранее списка проектов
+
+    # Выбор проекта по идентификатору
+    def select_by_id(self, id):
+        wd = self.app.wd                                                    # Получение доступа к web-драйверу
+        wd.get(self.app.base_url + "/manage_proj_edit_page.php?project_id=%s" % id)
 
     # Выбор проекта по порядковому номеру
     def select_by_index(self, index):
         wd = self.app.wd                                                    # Получение доступа к web-драйверу
         wd.find_elements_by_xpath("//table[3]/tbody/tr")[index+2].find_element_by_tag_name("a").click()
 
+    # Удаление проекта по идентификатору
+    def delete_by_id(self, id):
+        wd = self.app.wd                                                    # Получение доступа к web-драйверу
+        self.open_project_page()                                            # Переход к списку проектов
+        self.select_by_id(id)                                               # Выбор проекта по порядковому номеру
+        wd.find_element_by_css_selector('input[value="Delete Project"]').click()    # Удаление проекта
+        wd.find_element_by_css_selector('input[value="Delete Project"]').click()    # Подтверждение удаления
+        self.project_cache = None                                           # Сброс сохраненного ранее списка проектов
+
     # Удаление проекта по порядковому номеру
     def delete_by_index(self, index):
         wd = self.app.wd                                                    # Получение доступа к web-драйверу
         self.open_project_page()                                            # Переход к списку проектов
         self.select_by_index(index)                                         # Выбор проекта по порядковому номеру
-        wd.find_element_by_css_selector("form > input.button").click()      # Удаление проекта
-        wd.find_element_by_css_selector("input.button").click()             # Подтверждение удаления
+        wd.find_element_by_css_selector('input[value="Delete Project"]').click()    # Удаление проекта
+        wd.find_element_by_css_selector('input[value="Delete Project"]').click()    # Подтверждение удаления
         self.project_cache = None                                           # Сброс сохраненного ранее списка проектов
 
     project_cache = None                                                    # Список проектов
@@ -73,10 +88,7 @@ class ProjectHelper:
                 self.project_cache.append(Project(id=id, name=name, description=description))  # Добавление в список проектов
         return list(self.project_cache)                                     # Список проектов
 
-    # Проверка наличия проекта в списке
-    def is_project_on_list(self, project):
-        return project in self.get_project_list()
-
+    # Получение количества проектов
     def count(self):
         wd = self.app.wd                                                    # Получение доступа к web-драйверу
         self.open_project_page()                                            # Переход к списку проектов

@@ -40,7 +40,7 @@ def app(request, config):
     browser = request.config.getoption("--browser")
     user_config = config["webadmnin"]                                       # Получение данных конфигурации выполнения из файла для работы с Web
     if fixture is None or not fixture.is_valid():
-        fixture = Application(browser=browser, base_url=config["web"]['baseUrl'])
+        fixture = Application(browser=browser, config=config)
     fixture.session.ensure_login(username=user_config['username'], password=user_config['password'])    # Авторизация пользователя
     return fixture
 

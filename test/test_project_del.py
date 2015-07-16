@@ -28,3 +28,15 @@ def test_project_del_db(app, orm):
     new_projects = orm.get_project_list()                                   # Список проектов после удаления
     old_projects.remove(project)                                            # Удаление проекта из списка
     assert sorted(old_projects, key=Project.id_or_max) == sorted(new_projects, key=Project.id_or_max)
+
+
+# Тест удаленияпроекта через протокол SOAP
+def test_project_del_soap(app):
+    if len(app.soap.get_project_list()) == 0:                               # Проверка наличия хотя бы одного проекта в списке
+        app.project.create(Project(name="Test project",description="Description test project."))    # Добавление нового проекта
+    old_projects = app.soap.get_project_list()                              # Список проектов до удалени
+    project = random.choice(old_projects)                                   # Получение случайного порядкового номера
+    app.project.delete_by_id(project.id)                                    # Удаление проекта
+    new_projects = app.soap.get_project_list()                              # Список проектов после удаления
+    old_projects.remove(project)                                            # Удаление проекта из списка
+    assert sorted(old_projects, key=Project.id_or_max) == sorted(new_projects, key=Project.id_or_max)

@@ -78,8 +78,8 @@ class ProjectHelper:
             wd = self.app.wd                                                # Получение доступа к web-драйверу
             self.open_project_page()                                        # Переход к списку проектов
             self.project_cache = []                                         # Изначально список проектов пустой
-            tbody = wd.find_elements_by_xpath("//table[3]/tbody/tr")        # Таблица проектов
-            for row in tbody[2:]:                                           # Перебор всех элементов списка на странице
+            trs = wd.find_elements_by_xpath("//table[3]/tbody/tr")          # Список строк таблицы проектов
+            for row in trs[2:]:                                             # Перебор всех элементов списка на странице
                 cells = row.find_elements_by_tag_name("td")                 # Получение списка ячеек строки таблицы проектов
                 href = cells[0].find_element_by_tag_name("a").get_attribute("href")
                 id = re.search("\d+$", href).group(0)                       # Идентификатор проекта

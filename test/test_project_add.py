@@ -8,7 +8,7 @@ import string                                                               # С
 
 # Тест добавления проекта, проверка через пользователький интерфейс
 def test_project_add_ui(app):
-    project = Project(name=random_string("Project_", 10),description=random_text("Description: ", 100))  # Новый проект
+    project = Project(name=random_string("Project_", 20),description=random_text("Description: ", 100))  # Новый проект
     old_projects = app.project.get_project_list()                           # Список проектов до добавления
     if not project in old_projects:                                         # Проверка наличия проекта в списке
         app.project.create(project)                                         # Добавление проекта
@@ -19,12 +19,23 @@ def test_project_add_ui(app):
 
 # Тест добавления проекта, проверка с использование базы данных
 def test_project_add_db(app, orm):
-    project = Project(name=random_string("Project_", 10),description=random_text("Description: ", 100))  # Новый проект
+    project = Project(name=random_string("Project_", 20),description=random_text("Description: ", 100))  # Новый проект
     old_projects = orm.get_project_list()                                   # Список проектов до добавления
     if not project in old_projects:                                         # Проверка наличия проекта в списке
         app.project.create(project)                                         # Добавление проекта
         old_projects.append(project)                                        # Добавление нового проекта в список
     new_projects = orm.get_project_list()                                   # Список проектов после добавления
+    assert sorted(old_projects, key=Project.id_or_max) == sorted(new_projects, key=Project.id_or_max)
+
+
+# Тест добавления проекта через протокол SOAP
+def test_project_add_soap(app):
+    project = Project(name=random_string("Project_", 20),description=random_text("Description: ", 100))  # Новый проект
+    old_projects = app.soap.get_project_list()                              # Список проектов до добавления
+    if not project in old_projects:                                         # Проверка наличия проекта в списке
+        app.project.create(project)                                         # Добавление проекта
+        old_projects.append(project)                                        # Добавление нового проекта в список
+    new_projects = app.soap.get_project_list()                              # Список проектов после добавления
     assert sorted(old_projects, key=Project.id_or_max) == sorted(new_projects, key=Project.id_or_max)
 
 

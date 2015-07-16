@@ -3,12 +3,13 @@ __author__ = 'M.Novikov'
 
 from fixture.project import ProjectHelper                                           # Управление проектами Mantis
 from fixture.session import SessionHelper
+from fixture.soap import SoapHelper                                                 # Работа по протоколу SOAP
 from selenium import webdriver
 
 
 class Application:
 
-    def __init__(self, browser, base_url):
+    def __init__(self, browser, config):
         if browser == "firefox":
             self.wd = webdriver.Firefox()
         elif browser == "chrome":
@@ -19,7 +20,9 @@ class Application:
             raise ValueError("Unrecognized browser %s" % browser)
         self.project = ProjectHelper(self)
         self.session = SessionHelper(self)
-        self.base_url = base_url
+        self.soap = SoapHelper(self)
+        self.config = config
+        self.base_url = config["web"]['baseUrl']
 
     def is_valid(self):
         try:
